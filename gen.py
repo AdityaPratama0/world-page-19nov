@@ -499,7 +499,7 @@ def build():
     for i, (x, y) in enumerate(lead_geo):
         svg.raw(f'<clipPath id="lead_clip{i}"><rect x="{x}" y="{y}" width="306" height="120"/></clipPath>')
     for i, (x, y) in enumerate(cards_geo):
-        svg.raw(f'<clipPath id="card_clip{i}"><rect x="{x}" y="{y}" width="180" height="44"/></clipPath>')
+        svg.raw(f'<clipPath id="card_clip{i}"><rect x="{x}" y="{y}" width="180" height="58"/></clipPath>')
     svg.raw('<clipPath id="map_clip"><rect x="40" y="620" width="300" height="100"/></clipPath>')
     svg.raw('</defs>')
     svg.rect(0, 0, W, H, PAPER)
@@ -557,6 +557,7 @@ def build():
         region, field, kicker, head, deck, scene = LEADS[i]
         rc = REGION_COL[region]
         band_lead(svg, x, y, 306, 120, i)
+        svg.raw(f'<g clip-path="url(#lead_clip{i})"><rect x="{x}" y="{y}" width="306" height="120" fill="{rc}" opacity="0.22"/></g>')
         rect_y = y + 120
         svg.rect(x, rect_y, 306, 14, rc)
         svg.text(x + 8, rect_y + 10.5, f"{i+1}  {region.upper()} \u00b7 {kicker}", SANS_B, 8.6, WHITE,
@@ -580,14 +581,15 @@ def build():
     for i, (x, y) in enumerate(cards_geo):
         region, field, kicker, head, scene = CARDS[i]
         rc = REGION_COL[region]
-        card_scene(svg, x, y, 180, 44, i)
-        svg.rect(x, y + 52, 180, 13, rc)
+        card_scene(svg, x, y, 180, 58, i)
+        svg.raw(f'<g clip-path="url(#card_clip{i})"><rect x="{x}" y="{y}" width="180" height="58" fill="{rc}" opacity="0.26"/></g>')
+        svg.rect(x, y + 62, 180, 13, rc)
         check(f"{region.upper()} \u00b7 {kicker}", SANS_B, 8.0, 174, f"card kicker {i+1}")
-        svg.text(x + 4, y + 62, f"{region.upper()} \u00b7 {kicker}", SANS_B, 8.0, WHITE,
+        svg.text(x + 4, y + 72, f"{region.upper()} \u00b7 {kicker}", SANS_B, 8.0, WHITE,
                  weight="bold", what=f"card kicker {i+1}")
         lines = wrap(head, SERIF_B, 12, 176, 2, f"card head {i+4}")
         for k, ln in enumerate(lines):
-            svg.serif(x, y + 80 + k * 14, ln, 12, box=176, what=f"card head {i+4}")
+            svg.serif(x, y + 90 + k * 13, ln, 11.5, box=176, what=f"card head {i+4}")
 
     # Map and date check
     my, mh = 620, 100
@@ -651,6 +653,7 @@ def build():
         y = y0 + row * pitch
         if (rows - 1) - row:
             y += sum(fit[(rows - 1) - k] for k in range(row)) * 7.5
+        svg.rect(x - 5, y - 7.6, 2.4, 9.2, REGION_COL[region])
         num = f"{i + 14}"
         check(num, SANS_B, BRIEF_SIZE, 14, "brief num")
         svg.text(x, y, num, SANS_B, BRIEF_SIZE, ACC, weight="bold", what="brief num")
